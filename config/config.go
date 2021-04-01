@@ -2,15 +2,55 @@ package config
 
 import (
 	"fmt"
+	"log"
 	"os"
+	"strconv"
+
+	"github.com/joho/godotenv"
 )
 
-var JWT_secret_key = []byte("my_secret_key")
+var (
+	JWT_secret_key        = []byte("my_secret_key")
+	Migration_enabled     = false
+	Authorization_enabled = false
+)
+
+func init() {
+	err := godotenv.Load()
+	if err != nil {
+		log.Println(".env file not found")
+	}
+	SetJWTSecretKey()
+	SetMigrationEnabled()
+	SetAuthorizationEnabled()
+}
 
 func SetJWTSecretKey() {
 	jwt_secret, is_setted := os.LookupEnv("JWT_SECRET")
 	if is_setted {
 		JWT_secret_key = []byte(jwt_secret)
+	}
+}
+
+func SetMigrationEnabled() {
+	var err error
+	migration_enabled, is_setted := os.LookupEnv("MIGRATION_ENABLED")
+	if is_setted {
+		Migration_enabled, err = strconv.ParseBool(migration_enabled)
+		if err != nil {
+			log.Fatal("MIGRATION_ENABLED must be bool")
+		}
+	}
+}
+
+func SetAuthorizationEnabled() {
+	var err error
+	authorization_enabled, is_setted := os.LookupEnv("AUTHORIZATION_ENABLED")
+	if is_setted {
+		Authorization_enabled, err = strconv.ParseBool(authorization_enabled)
+		if err != nil {
+			log.Fatal("AUTHORIZATION_ENABLED must be bool")
+		}
 	}
 }
 
