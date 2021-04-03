@@ -6,4 +6,4 @@ JWT based Authentication & Authorization Middleware
 * Multi Stage Docker Image
 * Failed Login and Register logging
 * Add more authorization rules
-* Caching for rules
+* Scalable caching

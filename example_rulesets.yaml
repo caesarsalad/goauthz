@@ -1,0 +1,9 @@
+RuleSets:
+  - Path: "/api/v1/super_service/"
+    MetaKey: "user_id"
+    MetaLocationID: 2
+    HTTPMethodID: 3
+  - Path: "/api/v2/super_service/([0-9]+)/delete//*"
+    MetaKey: "user_id"
+    MetaLocationID: 3
+    HTTPMethodID: 1

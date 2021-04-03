@@ -143,6 +143,7 @@ func main() {
 	internal_api.Post("/rule", authorization.AddNewRule)
 	internal_api.Get("/assigned_rules", authorization.ListAssignedRules)
 	internal_api.Post("/assign_rule", authorization.AssignNewRule)
+	internal_api.Post("/rule_set_file", authorization.RuleSetFile)
 
 	database.ConnectDB()
 	if config.Migration_enabled {
@@ -150,8 +151,11 @@ func main() {
 		database.DB.AutoMigrate(&database.User{},
 			&database.Rule{},
 			&database.AssignedRules{})
+		if config.DB_init {
+			authorization.InitStaticTypesDB()
+		}
 	}
-
+	authorization.CompileAllRegexRules()
 	uri := config.GetURI()
 	app.Listen(uri)
 }

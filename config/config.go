@@ -13,6 +13,7 @@ var (
 	JWT_secret_key        = []byte("my_secret_key")
 	Migration_enabled     = false
 	Authorization_enabled = false
+	DB_init               = false
 )
 
 func init() {
@@ -23,6 +24,7 @@ func init() {
 	SetJWTSecretKey()
 	SetMigrationEnabled()
 	SetAuthorizationEnabled()
+	SetDBInitEnabled()
 }
 
 func SetJWTSecretKey() {
@@ -50,6 +52,17 @@ func SetAuthorizationEnabled() {
 		Authorization_enabled, err = strconv.ParseBool(authorization_enabled)
 		if err != nil {
 			log.Fatal("AUTHORIZATION_ENABLED must be bool")
+		}
+	}
+}
+
+func SetDBInitEnabled() {
+	var err error
+	db_init_enabled, is_setted := os.LookupEnv("DB_INIT")
+	if is_setted {
+		DB_init, err = strconv.ParseBool(db_init_enabled)
+		if err != nil {
+			log.Fatal("DB_INIT must be bool")
 		}
 	}
 }
