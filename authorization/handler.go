@@ -26,7 +26,7 @@ func AddNewRule(c *fiber.Ctx) error {
 		}
 	}
 	rule := database.Rule{Path: req_rule.Path, MetaKey: req_rule.MetaKey,
-		MetaLocationID: req_rule.MetaLocationID, HTTPMethodID: req_rule.HTTPMethodID}
+		MetaLocationID: req_rule.MetaLocationID, HTTPMethodID: req_rule.HTTPMethodID, PathPrefix: req_rule.PathPrefix}
 	err := database.DB.Create(&rule).Error
 	if err != nil {
 		log.Print("Error while create new rule ", err)
@@ -89,4 +89,12 @@ func RuleSetFile(c *fiber.Ctx) error {
 		}
 	}
 	return c.SendStatus(201)
+}
+
+func RuleSetDump(c *fiber.Ctx) error {
+	file := RulseSetYamlDump()
+	if len(file) > 0 {
+		return c.Send(file)
+	}
+	return c.SendStatus(500)
 }

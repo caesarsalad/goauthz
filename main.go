@@ -4,16 +4,17 @@ import (
 	"errors"
 	"log"
 	"strings"
+	"time"
 
 	"github.com/caesarsalad/goauthz/authorization"
 	"github.com/caesarsalad/goauthz/config"
 	"github.com/caesarsalad/goauthz/cutils"
 	"github.com/caesarsalad/goauthz/database"
-	"github.com/dgrijalva/jwt-go"
 	"github.com/gofiber/fiber/v2"
 	"github.com/gofiber/fiber/v2/middleware/logger"
 	"github.com/gofiber/fiber/v2/middleware/requestid"
 	"github.com/gofiber/fiber/v2/utils"
+	"github.com/golang-jwt/jwt"
 	"golang.org/x/crypto/bcrypt"
 	"gorm.io/gorm"
 )
@@ -144,6 +145,7 @@ func main() {
 	internal_api.Get("/assigned_rules", authorization.ListAssignedRules)
 	internal_api.Post("/assign_rule", authorization.AssignNewRule)
 	internal_api.Post("/rule_set_file", authorization.RuleSetFile)
+	internal_api.Get("/rule_set_file", authorization.RuleSetDump)
 
 	database.ConnectDB()
 	if config.Migration_enabled {
@@ -155,7 +157,15 @@ func main() {
 			authorization.InitStaticTypesDB()
 		}
 	}
-	authorization.CompileAllRegexRules()
+
+	go func() {
+		for {
+			authorization.CompileAllRegexRules()
+			authorization.ReCacheUserRules()
+			time.Sleep(30 * time.Second)
+		}
+	}()
+
 	uri := config.GetURI()
 	app.Listen(uri)
 }

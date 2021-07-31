@@ -3,6 +3,7 @@ package authorization
 import (
 	"errors"
 	"fmt"
+	"log"
 	"regexp"
 
 	"github.com/caesarsalad/goauthz/database"
@@ -42,4 +43,14 @@ func RuleSetYamlParser(file []byte) error {
 	}
 	database.DB.Create(rule_sets.RuleSet)
 	return nil
+}
+
+func RulseSetYamlDump() []byte {
+	rule_sets := RuleSets{}
+	database.DB.Find(&rule_sets.RuleSet)
+	file, err := yaml.Marshal(rule_sets)
+	if err != nil {
+		log.Println("error while dump rulesets ", err)
+	}
+	return file
 }

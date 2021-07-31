@@ -17,6 +17,7 @@ type userRules struct {
 	MetaValue      sql.NullString
 	MetaLocationID sql.NullInt32
 	HTTPMethodID   sql.NullInt32
+	PathPrefix     bool
 }
 
 func regexValidation(request_path string, rule userRules) bool {
@@ -79,9 +80,18 @@ func CheckRules(c *fiber.Ctx, user_id uint) bool {
 				break
 			}
 		} else if strings.HasPrefix(request_path, rule.Path) {
-			if metaValidation(c, rule) {
-				matched = true
-				break
+			if rule.PathPrefix {
+				if metaValidation(c, rule) {
+					matched = true
+					break
+				}
+			} else {
+				if request_path == rule.Path {
+					if metaValidation(c, rule) {
+						matched = true
+						break
+					}
+				}
 			}
 		}
 	}
