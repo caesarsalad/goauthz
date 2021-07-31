@@ -14,12 +14,20 @@ type MetaLocation struct {
 	MetaLocation string `gorm:"uniqueIndex;unique;not null" json:"meta_location"`
 }
 
-type Rule struct {
+type HTTPMethod struct {
 	gorm.Model
-	Path           string       `gorm:"uniqueIndex;unique;not null" json:"path"`
-	MetaKey        string       `json:"meta_key"`
-	MetaLocationID uint         `json:"meta_location_id"`
-	MetaLocation   MetaLocation `gorm:"constraint:OnDelete:CASCADE;"`
+	Method string `gorm:"uniqueIndex;unique;not null" json:"method"`
+}
+
+type Rule struct {
+	gorm.Model     `yaml:"-"`
+	Path           string       `gorm:"index;not null" json:"path" yaml:"Path"`
+	MetaKey        string       `json:"meta_key" yaml:"MetaKey"`
+	PathPrefix     bool         `gorm:"default:false" json:"path_prefix" yaml:"path_prefix"`
+	MetaLocationID uint         `json:"meta_location_id" yaml:"MetaLocationID"`
+	MetaLocation   MetaLocation `gorm:"constraint:OnDelete:CASCADE;" yaml:"-"`
+	HTTPMethodID   uint         `json:"http_method_id" yaml:"HTTPMethodID"`
+	HTTPMethod     HTTPMethod   `gorm:"constraint:OnDelete:CASCADE;" yaml:"-"`
 }
 
 type AssignedRules struct {
